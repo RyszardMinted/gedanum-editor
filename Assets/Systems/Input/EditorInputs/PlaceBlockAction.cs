@@ -6,6 +6,13 @@ public class PlaceBlockAction : MonoBehaviour
     [SerializeField] private GameObject blockPrefab;
     [SerializeField] private LayerMask placementLayer;
 
+    private VoxelEditorInput input;
+
+    public void SetInput(VoxelEditorInput inputToSet)
+    {
+        input = inputToSet;
+    }
+    
     public void PlaceBlock() {
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer)) {
@@ -13,7 +20,6 @@ public class PlaceBlockAction : MonoBehaviour
             var snappedPosition = SnapToGrid(hitPoint);
 
             Instantiate(blockPrefab, snappedPosition, Quaternion.identity);
-            Debug.Log($"Block placed at: {snappedPosition}");
         }
     }
     
@@ -27,7 +33,6 @@ public class PlaceBlockAction : MonoBehaviour
             
             var block = hit.collider.gameObject;
             Destroy(block);
-            Debug.Log($"Block removed at: {block.transform.position}");
         }
     }
 

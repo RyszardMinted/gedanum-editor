@@ -789,6 +789,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b91a719cdb77438885b07f2e50edcb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flySpeed: 10
+  lookSpeed: 50
   placeAction: {fileID: 1514448192}
   cameraAction: {fileID: 1514448193}
 --- !u!4 &1475992139

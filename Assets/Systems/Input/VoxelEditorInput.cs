@@ -196,6 +196,118 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""FlyControls"",
+            ""id"": ""b49b0dc7-d6b8-4085-be74-9ba5ba03320b"",
+            ""actions"": [
+                {
+                    ""name"": ""FlyMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""def1b046-7506-4bc8-a45e-9a85466acf90"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""FlyModifier"",
+                    ""type"": ""Button"",
+                    ""id"": ""ba300004-48fb-46a0-88df-1ddce1c2492b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FlyLook"",
+                    ""type"": ""Value"",
+                    ""id"": ""29c82d3b-ffa0-41b6-b58e-a7d8345282ea"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""e640b80b-f185-4f2a-b8b7-8ac87fa125c6"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""c6d633f1-11a4-48a7-afae-354a3f317cda"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""ac7cd246-8f81-41b3-87fd-1134dc90b02b"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""9f5e29d0-1362-49f7-a8c7-e24fe6475e23"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""0c6a6d4b-7a91-4f3c-b096-9513162eef38"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c9184b8b-9d15-42dc-91ce-98b2c35d196f"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c56bed65-36a0-43de-977f-7910ff1a26dc"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyLook"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -207,11 +319,17 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
         m_Editor_CameraZoom = m_Editor.FindAction("CameraZoom", throwIfNotFound: true);
         m_Editor_PlaceBlock = m_Editor.FindAction("PlaceBlock", throwIfNotFound: true);
         m_Editor_RemoveBlock = m_Editor.FindAction("RemoveBlock", throwIfNotFound: true);
+        // FlyControls
+        m_FlyControls = asset.FindActionMap("FlyControls", throwIfNotFound: true);
+        m_FlyControls_FlyMove = m_FlyControls.FindAction("FlyMove", throwIfNotFound: true);
+        m_FlyControls_FlyModifier = m_FlyControls.FindAction("FlyModifier", throwIfNotFound: true);
+        m_FlyControls_FlyLook = m_FlyControls.FindAction("FlyLook", throwIfNotFound: true);
     }
 
     ~@VoxelEditorInput()
     {
         UnityEngine.Debug.Assert(!m_Editor.enabled, "This will cause a leak and performance issues, VoxelEditorInput.Editor.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_FlyControls.enabled, "This will cause a leak and performance issues, VoxelEditorInput.FlyControls.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -347,6 +465,68 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
         }
     }
     public EditorActions @Editor => new EditorActions(this);
+
+    // FlyControls
+    private readonly InputActionMap m_FlyControls;
+    private List<IFlyControlsActions> m_FlyControlsActionsCallbackInterfaces = new List<IFlyControlsActions>();
+    private readonly InputAction m_FlyControls_FlyMove;
+    private readonly InputAction m_FlyControls_FlyModifier;
+    private readonly InputAction m_FlyControls_FlyLook;
+    public struct FlyControlsActions
+    {
+        private @VoxelEditorInput m_Wrapper;
+        public FlyControlsActions(@VoxelEditorInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @FlyMove => m_Wrapper.m_FlyControls_FlyMove;
+        public InputAction @FlyModifier => m_Wrapper.m_FlyControls_FlyModifier;
+        public InputAction @FlyLook => m_Wrapper.m_FlyControls_FlyLook;
+        public InputActionMap Get() { return m_Wrapper.m_FlyControls; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(FlyControlsActions set) { return set.Get(); }
+        public void AddCallbacks(IFlyControlsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_FlyControlsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_FlyControlsActionsCallbackInterfaces.Add(instance);
+            @FlyMove.started += instance.OnFlyMove;
+            @FlyMove.performed += instance.OnFlyMove;
+            @FlyMove.canceled += instance.OnFlyMove;
+            @FlyModifier.started += instance.OnFlyModifier;
+            @FlyModifier.performed += instance.OnFlyModifier;
+            @FlyModifier.canceled += instance.OnFlyModifier;
+            @FlyLook.started += instance.OnFlyLook;
+            @FlyLook.performed += instance.OnFlyLook;
+            @FlyLook.canceled += instance.OnFlyLook;
+        }
+
+        private void UnregisterCallbacks(IFlyControlsActions instance)
+        {
+            @FlyMove.started -= instance.OnFlyMove;
+            @FlyMove.performed -= instance.OnFlyMove;
+            @FlyMove.canceled -= instance.OnFlyMove;
+            @FlyModifier.started -= instance.OnFlyModifier;
+            @FlyModifier.performed -= instance.OnFlyModifier;
+            @FlyModifier.canceled -= instance.OnFlyModifier;
+            @FlyLook.started -= instance.OnFlyLook;
+            @FlyLook.performed -= instance.OnFlyLook;
+            @FlyLook.canceled -= instance.OnFlyLook;
+        }
+
+        public void RemoveCallbacks(IFlyControlsActions instance)
+        {
+            if (m_Wrapper.m_FlyControlsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IFlyControlsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_FlyControlsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_FlyControlsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public FlyControlsActions @FlyControls => new FlyControlsActions(this);
     public interface IEditorActions
     {
         void OnCameraPan(InputAction.CallbackContext context);
@@ -354,5 +534,11 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
         void OnCameraZoom(InputAction.CallbackContext context);
         void OnPlaceBlock(InputAction.CallbackContext context);
         void OnRemoveBlock(InputAction.CallbackContext context);
+    }
+    public interface IFlyControlsActions
+    {
+        void OnFlyMove(InputAction.CallbackContext context);
+        void OnFlyModifier(InputAction.CallbackContext context);
+        void OnFlyLook(InputAction.CallbackContext context);
     }
 }

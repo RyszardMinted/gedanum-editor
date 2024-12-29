@@ -12,8 +12,8 @@ public class CameraMovementAction : MonoBehaviour
     [SerializeField] private float maxDistance = 100f; 
 
     private Vector3 rotationPivot;
-    private bool isRotating = false; 
-    
+    private bool isRotating = false;
+
     private void Update() {
         if (Mouse.current.middleButton.wasPressedThisFrame) {
             StartRotation();
