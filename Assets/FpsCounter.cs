@@ -13,7 +13,7 @@ public class FpsCounter : MonoBehaviour
         if (Time.unscaledTime > _timer)
         {
             int fps = (int)(1f / Time.unscaledDeltaTime);
-            _fpsText.text = "FPS: " + fps;
+            _fpsText.text = "FPS: " + fps + " res: " +Screen.currentResolution;
             _timer = Time.unscaledTime + _hudRefreshRate;
         }
     }

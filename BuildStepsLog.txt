@@ -1,0 +1,28 @@
+Build Steps Log:
+Step: Build player, Duration: 00:00:05.4715073s
+Step: Preprocess Player, Duration: 00:00:00.0481567s
+Step: Prepare For Build, Duration: 00:00:00.0001787s
+Step: ProducePlayerScriptAssemblies, Duration: 00:00:01.1247295s
+Step: Prebuild Cleanup and Recompile, Duration: 00:00:00.8300599s
+Step: Compile scripts, Duration: 00:00:00.3363060s
+Step: Generate and validate platform script types, Duration: 00:00:00.0184878s
+Step: Verify Build setup, Duration: 00:00:00.1144341s
+Step: Check old data build, Duration: 00:00:00.1042559s
+Step: Prepare assets for target platform, Duration: 00:00:00.0172019s
+Step: Prepare splash screen, Duration: 00:00:00.0005151s
+Step: Building scenes, Duration: 00:00:00.2737361s
+Step: Building scene Assets/Scenes/Main.unity, Duration: 00:00:00.2737192s
+Step: Build scripts DLLs, Duration: 00:00:00.0082564s
+Step: GetSystemAssemblies, Duration: 00:00:00.0008767s
+Step: Build GlobalGameManagers file, Duration: 00:00:00.0660415s
+Step: Writing asset files, Duration: 00:00:00.5338803s
+Step: Packaging assets - globalgamemanagers.assets, Duration: 00:00:00.3721273s
+Step: Packaging assets - resources.assets, Duration: 00:00:00.0808531s
+Step: Packaging assets - sharedassets0.assets = additional assets for scene 0: Assets/Scenes/Main.unity, Duration: 00:00:00.0660457s
+Step: Building Resources/unity_builtin_extra, Duration: 00:00:00.0418752s
+Step: Creating compressed player package, Duration: 00:00:00.9080162s
+Step: Write data build dirty tracking information, Duration: 00:00:00.0997603s
+Step: Postprocess built player, Duration: 00:00:01.8971812s
+Step: Setup incremental player build, Duration: 00:00:00.1511006s
+Step: Incremental player build, Duration: 00:00:01.1189327s
+Step: Report output files, Duration: 00:00:00.0036585s
