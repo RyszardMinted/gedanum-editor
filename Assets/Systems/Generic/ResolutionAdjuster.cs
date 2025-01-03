@@ -25,7 +25,6 @@ public class ResolutionAdjuster : MonoBehaviour
             Screen.SetResolution(width, height, false);
             oldHeight = height;
             oldWidth = width;
-            Debug.Log($"My dude 2 Adjusting resolution to {width}x{height}");
         }
     }
 }
