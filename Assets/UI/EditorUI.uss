@@ -1,0 +1,65 @@
+/* Root container */
+#root {
+    height: 100%; /* Ensure root takes the full screen */
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    display: flex;
+}
+
+/* Toolbar */
+#toolbar {
+    height: 50px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    flex-direction: row;
+}
+
+/* Main content area (below the toolbar) */
+#mainContent {
+    flex-grow: 1; /* Fills the remaining space */
+    display: flex; /* Horizontal layout for panels and viewport */
+    flex-direction: row;
+}
+
+
+.unity-button {
+   width: auto; 
+}
+
+.unity-button:hover {
+    background-color: #666;
+}
+
+/* Panels */
+#leftPanel, #rightPanel {
+    width: 20%;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    height: 100%;
+    border: 1px solid green;
+}
+
+/* Viewport */
+#viewport {
+    flex-grow: 1; /* Takes the remaining space in the main content */
+    background-color: transparent;
+}
+
+
+#newProjectDialog {
+    position: absolute;
+    display: none;
+    left: 0; top: 0; right: 0; bottom: 0;
+    
+    background-color: rgba(0,0,0,0.2);
+    align-items: center; 
+    justify-content: center;
+}
+
+
+#newProjectDialog #popup {
+    padding: 40;
+    min-width: 400px;
+}

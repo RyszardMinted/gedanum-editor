@@ -2,6 +2,8 @@ using UnityEngine;
 
 [System.Serializable]
 public class StandardBlocks {
+    public string blockName;                  
+
     public Vector3Int size;           
     public BlockData[] blocks;       
 }
@@ -9,7 +11,6 @@ public class StandardBlocks {
 [System.Serializable]
 public class BlockData {
     public Vector3Int position;         
-    public string type;                  
     public BlockFace top;              
     public BlockFace bottom;         
     public BlockFace front;            

@@ -5,15 +5,26 @@ public class PlaceBlockAction : MonoBehaviour
 {
     [SerializeField] private GameObject blockPrefab;
     [SerializeField] private LayerMask placementLayer;
-
+    
     private VoxelEditorInput input;
 
+    private ProjectManager projectManager;
+    private BlockManager blockManager;
+
+    public void Initialize(ProjectManager manager, BlockManager blockMng) {
+        projectManager = manager;
+        blockManager = blockMng;
+    }
+    
     public void SetInput(VoxelEditorInput inputToSet)
     {
         input = inputToSet;
     }
     
-    public void PlaceBlock() {
+    public void PlaceBlock()
+    {
+        if (projectManager.CurrentProject == null) return;
+        
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer)) {
             var hitPoint = hit.point;
@@ -24,6 +35,8 @@ public class PlaceBlockAction : MonoBehaviour
     }
     
     public void RemoveBlock() {
+        if (projectManager.CurrentProject == null) return;
+
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         
         if (Physics.Raycast(ray, out RaycastHit hit)) {

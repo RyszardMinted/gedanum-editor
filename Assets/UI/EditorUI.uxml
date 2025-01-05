@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/EditorUI.uss?fileID=7433441132597879392&amp;guid=8a9c70a77272c4a4f8de0c62aae7104a&amp;type=3#EditorUI" />
+    <ui:VisualElement name="root" picking-mode="Ignore" style="flex-direction: column;">
+        <ui:VisualElement name="toolbar">
+            <ui:Button name="newButton" text="New" />
+            <ui:Button name="saveButton" text="Save" />
+        </ui:VisualElement>
+        <ui:VisualElement name="mainContent" picking-mode="Ignore" style="flex-grow: 1; flex-direction: row;">
+            <ui:VisualElement name="leftPanel" style="width: 20%; padding: 10px;">
+                <ui:Label text="Texture List" />
+                <ui:ScrollView name="textureList" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="viewport" picking-mode="Ignore" style="flex-grow: 1;" />
+            
+            <ui:VisualElement name="rightPanel" style="width: 20%; padding: 10px;">
+                <ui:Label text="Block List" />
+                <ui:ScrollView name="blockList" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="newProjectDialog">
+            <ui:VisualElement name="popup" style="background-color: rgba(70, 70, 70, 255);">
+                <ui:Label text="Create New Block" style="margin-bottom: 10px; font-size: 20px;" />
+                <ui:TextField name="nameInput" label="Block Name" style="width: 100%; margin-bottom: 10px;" />
+                <ui:TextField name="sizeInput" label="Grid Size (e.g., 4x4x4)" style="width: 100%; margin-bottom: 10px;" />
+                <ui:Label name="errorLabel" style="display: none; color: red; margin-bottom: 10px;" />
+                <ui:Button name="createButton" text="Create" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        
+    </ui:VisualElement>
+</ui:UXML>

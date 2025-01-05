@@ -1,7 +1,12 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 
 public class VoxelEditorController : MonoBehaviour {
+    public UIDocument uiDocument;
+
     private VoxelEditorInput inputActions; // Your custom input actions class
     [SerializeField] private float flySpeed = 10f; // Movement speed
     [SerializeField] private float lookSpeed = 2f;   // Look sensitivity
@@ -13,6 +18,11 @@ public class VoxelEditorController : MonoBehaviour {
     private Vector2 moveInput = Vector2.zero;        // Input for movement
     private Vector2 lookInput = Vector2.zero;        // Input for mouse look
     private bool isModifierActive = false;  
+    
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
     
     private void Awake() {
         // Initialize the input actions
@@ -100,11 +110,15 @@ public class VoxelEditorController : MonoBehaviour {
         cameraAction.PanCamera(inputDelta);
     }
 
-    private void PlaceBlock() {
+    private void PlaceBlock()
+    {
+        if (IsPointerOverUI()) return;
         placeAction.PlaceBlock();
     }
 
     private void RemoveBlock() {
+        if (IsPointerOverUI()) return;
+
         placeAction.RemoveBlock();
     }
 

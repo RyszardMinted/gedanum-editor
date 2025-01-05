@@ -10,7 +10,6 @@ public class BlockInstance : MonoBehaviour
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
 
-    
     private void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
@@ -37,6 +36,8 @@ public class BlockInstance : MonoBehaviour
             texturePaths.Add($"Textures/{block.right.texture}");
         }
 
+        if (texturePaths.Count <= 0) return; // empty block
+        
         var textureArray = TextureLoader.CreateTextureArray(texturePaths.ToArray());
         if (textureArray == null) {
             Debug.LogError("Failed to create Texture2DArray.");
