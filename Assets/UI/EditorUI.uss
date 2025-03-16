@@ -58,8 +58,66 @@
     justify-content: center;
 }
 
+.button-selected {
+    border-color: yellow;
+    background-color: #333; /* Slightly darker for emphasis */
+}
+
+.texture-button.selected {
+    border-color: yellow;
+    background-color: #333; /* Slightly darker for emphasis */
+}
 
 #newProjectDialog #popup {
     padding: 40;
     min-width: 400px;
 }
+
+.texture-button {
+    border: 1px solid white;
+    margin: 5px;
+    height: 100px;
+    width: 100px;
+    background-color: #222;
+    background-size: cover;
+    border-radius: 5px;
+}
+
+.texture-button:hover {
+    border-color: yellow;
+    cursor: pointer;
+}
+
+.generic-modal {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: rgb(70, 70, 70);
+    padding: 20px;
+    border-radius: 5px;
+    min-width: 300px;
+}
+
+.modal-text {
+    white-space: normal;
+    margin-bottom: 20px;
+}
+
+.modal-buttons {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.modal-button {
+    min-width: 80px;
+}
+

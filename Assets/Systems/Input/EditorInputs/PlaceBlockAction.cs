@@ -23,7 +23,11 @@ public class PlaceBlockAction : MonoBehaviour
     
     public void PlaceBlock()
     {
-        if (projectManager.CurrentProject == null) return;
+        if (projectManager.CurrentProject == null)
+        {
+            
+            return;
+        }
         
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer)) {

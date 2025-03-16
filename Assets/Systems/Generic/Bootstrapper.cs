@@ -6,7 +6,7 @@ public class Bootstrapper : MonoBehaviour
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private PlaceBlockAction blockAction;
     
-    private void Start() {
+    private void Awake() {
         var projectManager = new ProjectManager(blockManager);
         editorUIManager.Initialize(projectManager, blockManager);          
         blockAction.Initialize(projectManager, blockManager);          

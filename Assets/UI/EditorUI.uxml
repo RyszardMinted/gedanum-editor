@@ -2,33 +2,42 @@
     <Style src="project://database/Assets/UI/EditorUI.uss?fileID=7433441132597879392&amp;guid=8a9c70a77272c4a4f8de0c62aae7104a&amp;type=3#EditorUI" />
     <ui:VisualElement name="root" picking-mode="Ignore" style="flex-direction: column;">
         <ui:VisualElement name="toolbar">
+            <ui:Button name="openFolderButton" text="Open Folder" />
+
             <ui:Button name="newButton" text="New" />
             <ui:Button name="saveButton" text="Save" />
+            <ui:Button name="deleteButton" text="Delete" />
+            
         </ui:VisualElement>
         <ui:VisualElement name="mainContent" picking-mode="Ignore" style="flex-grow: 1; flex-direction: row;">
             <ui:VisualElement name="leftPanel" style="width: 20%; padding: 10px;">
                 <ui:Label text="Texture List" />
-                <ui:ScrollView name="textureList" />
+                <ui:ScrollView name="textureList" style="height: 100%; overflow: scroll;" />
             </ui:VisualElement>
-            
             <ui:VisualElement name="viewport" picking-mode="Ignore" style="flex-grow: 1;" />
-            
             <ui:VisualElement name="rightPanel" style="width: 20%; padding: 10px;">
                 <ui:Label text="Block List" />
                 <ui:ScrollView name="blockList" />
             </ui:VisualElement>
         </ui:VisualElement>
-
         <ui:VisualElement name="newProjectDialog">
-            <ui:VisualElement name="popup" style="background-color: rgba(70, 70, 70, 255);">
+            <ui:VisualElement name="popup" style="background-color: rgb(70, 70, 70);">
                 <ui:Label text="Create New Block" style="margin-bottom: 10px; font-size: 20px;" />
                 <ui:TextField name="nameInput" label="Block Name" style="width: 100%; margin-bottom: 10px;" />
-                <ui:TextField name="sizeInput" label="Grid Size (e.g., 4x4x4)" style="width: 100%; margin-bottom: 10px;" />
+                <ui:DropdownField label="Dropdown" name="sizeInput" />
                 <ui:Label name="errorLabel" style="display: none; color: red; margin-bottom: 10px;" />
                 <ui:Button name="createButton" text="Create" />
+                <ui:Button name="cancelBtn" text="Cancel" />
             </ui:VisualElement>
         </ui:VisualElement>
-        
-        
+        <ui:VisualElement name="genericModal" class="generic-modal">
+            <ui:VisualElement name="modalContent" class="modal-content">
+                <ui:Label name="modalText" class="modal-text" />
+                <ui:VisualElement name="modalButtons" class="modal-buttons">
+                    <ui:Button name="modalButton1" class="modal-button" />
+                    <ui:Button name="modalButton2" class="modal-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

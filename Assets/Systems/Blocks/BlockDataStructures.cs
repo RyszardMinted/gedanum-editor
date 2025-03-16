@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [System.Serializable]
@@ -5,7 +6,9 @@ public class StandardBlocks {
     public string blockName;                  
 
     public Vector3Int size;           
-    public BlockData[] blocks;       
+    public BlockData[] blocks;
+
+    [NonSerialized] public string OwnerFilename;
 }
 
 [System.Serializable]

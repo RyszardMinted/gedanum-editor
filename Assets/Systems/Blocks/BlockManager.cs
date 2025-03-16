@@ -18,11 +18,7 @@ public class BlockManager : MonoBehaviour {
         };
 
         var standardBlocks = JsonConvert.DeserializeObject<StandardBlocks>(json, settings);
-
-        if (standardBlocks == null) {
-            Debug.LogError("Failed to deserialize blocks.json");
-            return null;
-        }
+        standardBlocks.OwnerFilename = path;
 
         return standardBlocks;
     }
@@ -36,11 +32,7 @@ public class BlockManager : MonoBehaviour {
         };
 
         var standardBlocks = JsonConvert.DeserializeObject<StandardBlocks>(json, settings);
-
-        if (standardBlocks == null) {
-            Debug.LogError("Failed to deserialize blocks.json");
-            return null;
-        }
+        standardBlocks.OwnerFilename = jsonFileName;
 
         return CreateBlockStructure(standardBlocks);
     }

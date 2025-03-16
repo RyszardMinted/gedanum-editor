@@ -4,6 +4,7 @@ using UnityEngine;
 public class ProjectManager
 {
     public BlockInstance CurrentProject;
+    public string CurrentFolder;
 
 
     private BlockManager blockManager;

@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,6 +11,8 @@ public class EditorUIManager : MonoBehaviour {
 
     private ProjectManager projectManager;
     private BlockManager blockManager;
+    
+    private string selectedTexture;
 
     public void Initialize(ProjectManager manager, BlockManager blockMng) {
         projectManager = manager;
@@ -17,19 +22,105 @@ public class EditorUIManager : MonoBehaviour {
     private void Start() {
         var root = uiDocument.rootVisualElement;
 
-        Button saveButton = root.Q<Button>("saveButton");
-        Button newButton = root.Q<Button>("newButton");
+        var saveButton = root.Q<Button>("saveButton");
+        var newButton = root.Q<Button>("newButton");
+        var deleteButton = root.Q<Button>("deleteButton");
+        var openFolderButton = root.Q<Button>("openFolderButton");
 
         PreventPanelInput(root.Q<VisualElement>("toolbar"));
         PreventPanelInput(root.Q<VisualElement>("leftPanel"));
         PreventPanelInput(root.Q<VisualElement>("rightPanel"));
 
         saveButton.clicked += SaveProject;
-        // loadButton.clicked += LoadProject;
-        
         newButton.clicked += CreateNewProject;
+        deleteButton.clicked += DeleteButtonOnClicked;
+        openFolderButton.clicked += OpenFolderButtonOnClicked;
         
         PopulateBlockList();
+        PopulateTextureList(); 
+    }
+
+    private void OpenFolderButtonOnClicked()
+    {
+        var folder = StandaloneFileBrowser.OpenFolderPanel("Open Project Folder", "", false);
+        foreach (var entry in folder)
+        {
+            Debug.Log($"Folder {entry}");
+        }
+    }
+
+    private void DeleteButtonOnClicked()
+    {
+        if (projectManager.CurrentProject == null)
+        {
+            return;
+        }
+        ShowModal($"Are you sure you want to delete {projectManager.CurrentProject.data.blockName}?", "Delete", () =>
+        {
+            
+            var pathToDelete = projectManager.CurrentProject.data.OwnerFilename;
+            File.Delete(pathToDelete);
+            PopulateBlockList();
+            projectManager.CurrentProject = null;
+            
+        }, "Cancel", HideModal);
+    }
+
+    private void PopulateTextureList() {
+        var root = uiDocument.rootVisualElement;
+        var textureList = root.Q<ScrollView>("textureList");
+        textureList.Clear();
+
+        Texture2D[] textures = Resources.LoadAll<Texture2D>("Textures");
+        Button lastSelectedButton = null; // Track the previously selected button
+
+        foreach (Texture2D texture in textures) {
+            // Create a button for each texture
+            Button textureButton = new Button { text = texture.name };
+            textureButton.AddToClassList("texture-button"); // Add default style
+            textureButton.style.backgroundImage = new StyleBackground(texture);
+            textureButton.style.unityBackgroundScaleMode = ScaleMode.ScaleToFit;
+
+            // Add click logic to select the texture
+            textureButton.clicked += () => {
+                // Remove the "selected" class from the previously selected button
+                if (lastSelectedButton != null) {
+                    lastSelectedButton.RemoveFromClassList("selected");
+                }
+
+                // Mark the current button as selected
+                textureButton.AddToClassList("selected");
+                lastSelectedButton = textureButton;
+
+                // Update the selected texture
+                selectedTexture = texture.name;
+                Debug.Log($"Selected texture: {selectedTexture}");
+            };
+
+            textureList.Add(textureButton);
+        }
+
+        Debug.Log("Texture list populated.");
+    }
+
+    private List<string> GetExistingBlockFiles()
+    {
+        Debug.Log($"Persistent Storage: {Application.persistentDataPath}");
+        var files = Directory.GetFiles(Application.persistentDataPath, "*.json");
+
+        foreach (var entry in files)
+        {
+            Debug.Log($"[Block file] {entry}");
+        }
+
+        return files.ToList();
+    }
+    
+    private List<string> GetExistingBlockNames()
+    {
+        var files = Directory.GetFiles(Application.persistentDataPath, "*.json");
+
+        return files.Select(entry => blockManager.LoadInnerBlock(entry)).Select(standardBlocks => standardBlocks.blockName).ToList();
     }
     
     private void PopulateBlockList() {
@@ -37,13 +128,18 @@ public class EditorUIManager : MonoBehaviour {
         var blockList = root.Q<ScrollView>("blockList");
         blockList.Clear();
                                              
-        Debug.Log($"Persistent Storage: {Application.persistentDataPath}");
-        string[] files = Directory.GetFiles(Application.persistentDataPath, "*.json");
+        var files = GetExistingBlockFiles();
+        
         foreach (string file in files) {
             var standardBlocks = blockManager.LoadInnerBlock(file);
+            standardBlocks.OwnerFilename = file;
             
-
-            Button blockButton = new Button { text = standardBlocks.blockName };
+            var blockButton = new Button { text = standardBlocks.blockName };
+            if (projectManager.CurrentProject?.data?.blockName == standardBlocks.blockName)
+            {
+                if (!blockButton.ClassListContains("button-selected"))
+                    blockButton.AddToClassList("button-selected");
+            }
             blockButton.clicked += () => LoadBlockFromFile(file);
 
             blockList.Add(blockButton);
@@ -61,6 +157,8 @@ public class EditorUIManager : MonoBehaviour {
         projectManager.ClearProject(false);
         projectManager.CurrentProject = blockManager.LoadBlocksFromJson(filePath);
 
+        PopulateBlockList();
+        
         Debug.Log($"Loaded block from {filePath}");
     }
 
@@ -77,18 +175,38 @@ public class EditorUIManager : MonoBehaviour {
         VisualElement dialog = root.Q<VisualElement>("newProjectDialog");
         dialog.style.display = DisplayStyle.Flex;
 
-        TextField sizeInput = dialog.Q<TextField>("sizeInput");
+        DropdownField sizeInput = dialog.Q<DropdownField>("sizeInput");
+        var choices = new List<string> { "2x2x2", "3x3x3", "4x4x4", "5x5x5", "6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11", "12x12x12", "13x13x13", "14x14x14", "15x15x15", "16x16x16" };
+        sizeInput.choices = choices;
+        sizeInput.value = choices[6];
+        
         TextField nameInput = dialog.Q<TextField>("nameInput");
         Button createButton = dialog.Q<Button>("createButton");
+        Button cancelButton = dialog.Q<Button>("cancelBtn");
         Label errorLabel = dialog.Q<Label>("errorLabel");
 
+        cancelButton.clicked += () =>
+        {
+            dialog.style.display = DisplayStyle.None;
+        };
+
         createButton.clicked += () => {
-            string sizeText = sizeInput.value;
-            string blockName = nameInput.value;
+            errorLabel.style.display = DisplayStyle.None;
+            var sizeText = sizeInput.value;
+            var blockName = nameInput.value;
 
             if (blockName.Length < 3) {
-                errorLabel.text = "Block name must be at least 3 characters.";
-                errorLabel.style.display = DisplayStyle.Flex;
+                ShowModal($"Block name must be at least 3 characters.", "Ok", HideModal);
+
+                return;
+            }
+            
+            var existingBlocks = GetExistingBlockNames();
+            var exists = existingBlocks.Any(s => s.Equals(blockName, StringComparison.OrdinalIgnoreCase));
+            if (exists)
+            {
+                ShowModal($"Block of that name {blockName} already exists", "Ok", HideModal);
+
                 return;
             }
                                                    
@@ -100,6 +218,7 @@ public class EditorUIManager : MonoBehaviour {
                 
                 dialog.style.display = DisplayStyle.None;
                 errorLabel.style.display = DisplayStyle.None;
+                SaveProject();
             } else {
                 errorLabel.text = "Invalid size format. Use NxNxN, e.g., 4x4x4.";
                 errorLabel.style.display = DisplayStyle.Flex;
@@ -142,5 +261,50 @@ public class EditorUIManager : MonoBehaviour {
             return true;
         }
         return false;
+    }
+    
+    public void ShowModal(string messageText, string button1Text, Action onButton1Clicked = null, string button2Text = null, Action onButton2Clicked = null) {
+        var root = uiDocument.rootVisualElement;
+        var modal = root.Q<VisualElement>("genericModal");
+        var modalText = modal.Q<Label>("modalText");
+        var button1 = modal.Q<Button>("modalButton1");
+        var button2 = modal.Q<Button>("modalButton2");
+
+        modalText.text = messageText;
+        button1.text = button1Text;
+        button2.text = button2Text;
+
+        if (string.IsNullOrEmpty(button2.text))
+        {
+            button2.style.display = DisplayStyle.None;
+        }
+
+        void OnButton1Clicked(ClickEvent evt)
+        {
+            onButton1Clicked?.Invoke();
+            HideModal();
+        }
+
+        void OnButton2Clicked(ClickEvent evt)
+        {
+            onButton2Clicked?.Invoke();
+            HideModal();
+        }
+        
+        button1.RegisterCallbackOnce<ClickEvent>(OnButton1Clicked);
+        button2.RegisterCallbackOnce<ClickEvent>(OnButton2Clicked);
+
+        modal.style.display = DisplayStyle.Flex;
+    }
+    /// <summary>
+    /// Hides the modal dialog.
+    /// </summary>
+    public void HideModal() {
+        var root = uiDocument.rootVisualElement;
+        var modal = root.Q<VisualElement>("genericModal");
+        var button1 = modal.Q<Button>("modalButton1");
+        var button2 = modal.Q<Button>("modalButton2");
+        
+        modal.style.display = DisplayStyle.None;
     }
 }

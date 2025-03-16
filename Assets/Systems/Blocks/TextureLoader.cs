@@ -5,6 +5,11 @@ public static class TextureLoader {
     public static Texture2D LoadTexture(string relativePath) {
         var resourcePath = Path.ChangeExtension(relativePath, null); 
         var texture = Resources.Load<Texture2D>(resourcePath);
+        if (texture == null)
+        {
+            Debug.LogError($"Failed to load texture {resourcePath}");
+            return null;
+        }
         texture.filterMode = FilterMode.Point;
 
         if (texture == null) {
