@@ -7,12 +7,15 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 public class EditorUIManager : MonoBehaviour {
+    private static readonly int GridScale = Shader.PropertyToID("_GridScale");
     public UIDocument uiDocument;
-
+    public Material mainGridMaterial;
+    
     private ProjectManager projectManager;
     private BlockManager blockManager;
     
     private string selectedTexture;
+    private Label debugText;
 
     public void Initialize(ProjectManager manager, BlockManager blockMng) {
         projectManager = manager;
@@ -26,7 +29,8 @@ public class EditorUIManager : MonoBehaviour {
         var newButton = root.Q<Button>("newButton");
         var deleteButton = root.Q<Button>("deleteButton");
         var openFolderButton = root.Q<Button>("openFolderButton");
-
+        debugText = root.Q<Label>("debugText");
+        
         PreventPanelInput(root.Q<VisualElement>("toolbar"));
         PreventPanelInput(root.Q<VisualElement>("leftPanel"));
         PreventPanelInput(root.Q<VisualElement>("rightPanel"));
@@ -38,6 +42,11 @@ public class EditorUIManager : MonoBehaviour {
         
         PopulateBlockList();
         PopulateTextureList(); 
+    }
+
+    private void Update()
+    {
+        debugText.text = projectManager.DebugText;
     }
 
     private void OpenFolderButtonOnClicked()
@@ -156,6 +165,7 @@ public class EditorUIManager : MonoBehaviour {
 
         projectManager.ClearProject(false);
         projectManager.CurrentProject = blockManager.LoadBlocksFromJson(filePath);
+        mainGridMaterial.SetFloat(GridScale, projectManager.CurrentProject.data.size.x);
 
         PopulateBlockList();
         
@@ -212,6 +222,8 @@ public class EditorUIManager : MonoBehaviour {
                                                    
             if (ParseGridSize(sizeText, out Vector3Int size)) {
                 projectManager.CreateNewProject(size, nameInput.value);
+                mainGridMaterial.SetFloat(GridScale, projectManager.CurrentProject.data.size.x);
+
                 PopulateBlockList();
                 
                 Debug.Log($"New project created with name: {blockName} and size: {size}");

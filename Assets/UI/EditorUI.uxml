@@ -15,9 +15,12 @@
                 <ui:ScrollView name="textureList" style="height: 100%; overflow: scroll;" />
             </ui:VisualElement>
             <ui:VisualElement name="viewport" picking-mode="Ignore" style="flex-grow: 1;" />
+            
             <ui:VisualElement name="rightPanel" style="width: 20%; padding: 10px;">
+                <ui:Label name="debugText" text="Pos (0, 0, 0)" />
                 <ui:Label text="Block List" />
                 <ui:ScrollView name="blockList" />
+                
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="newProjectDialog">

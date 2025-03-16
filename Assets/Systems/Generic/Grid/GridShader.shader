@@ -2,58 +2,69 @@ Shader "Custom/GridShader"
 {
     Properties
     {
-        _GridColor("Grid Color", Color) = (0.5, 0.5, 0.5, 1)
-        _BackgroundColor("Background Color", Color) = (0, 0, 0, 0) // Transparent background
-        _Scale("Grid Scale", Float) = 1
-        _LineThickness("Line Thickness", Float) = 0.05
+        _GridScale ("Grid Scale", Float) = 2
+        _LineThickness ("Line Thickness", Float) = 0.1
+        _BackgroundColor ("Background Color", Color) = (0, 0, 0, 1)
+        _GridColor ("Grid Color", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
-        LOD 100
-
+        Tags { "RenderType"="Transparent" "Queue"="Overlay" }
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off        
+        
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
-            AlphaTest Greater 0.1 // Ensures alpha cutoff
-
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
 
-            struct appdata_t
+            #include "UnityCG.cginc"
+
+            struct appdata
             {
                 float4 vertex : POSITION;
+                float2 uv : TEXCOORD0; // Use UV coordinates of the object
             };
 
             struct v2f
             {
-                float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float4 pos : SV_POSITION;
             };
 
-            fixed4 _GridColor;
-            fixed4 _BackgroundColor;
-            float _Scale;
+            float _GridScale;
             float _LineThickness;
+            fixed4 _BackgroundColor;
+            fixed4 _GridColor;
 
-            v2f vert(appdata_t v)
+            v2f vert(appdata v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.vertex.xz * _Scale;
+                o.uv = v.uv;
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float2 grid = abs(frac(i.uv - 0.5) - 0.5) / fwidth(i.uv); // Line width calculations
+                // Convert UV coordinates into scaled grid space
+                float2 scaledUV = i.uv * _GridScale;
+
+                // Calculate grid lines using absolute distance from nearest grid center
+                float2 grid = abs(frac(scaledUV + 0.5) - 0.5) / fwidth(scaledUV);
                 float lineGrid = min(grid.x, grid.y);
 
-                // Make lines opaque and background transparent
+                // Apply thickness
                 float alpha = step(_LineThickness, lineGrid);
-                return lerp(_BackgroundColor, _GridColor, alpha);
+
+                // Interpolate between background and grid color
+                fixed4 resultColor = lerp(_BackgroundColor, _GridColor, alpha);
+
+                // Ensure proper alpha blending
+                resultColor.a = lerp(_BackgroundColor.a, _GridColor.a, alpha);
+
+                return resultColor;
             }
             ENDCG
         }

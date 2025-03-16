@@ -5,6 +5,7 @@ public class ProjectManager
 {
     public BlockInstance CurrentProject;
     public string CurrentFolder;
+    public string DebugText;
 
 
     private BlockManager blockManager;

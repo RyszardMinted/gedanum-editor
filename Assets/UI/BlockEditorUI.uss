@@ -1,0 +1,54 @@
+.block-editor-panel {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 250px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.panel-header {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 10px;
+    -unity-font-style: bold;
+}
+
+.texture-panel {
+    margin-bottom: 20px;
+}
+
+.texture-list {
+    height: 200px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.face-panel {
+    margin-top: 10px;
+}
+
+.face-button {
+    margin: 5px 0;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    color: white;
+    transition: all 0.2s;
+}
+
+.face-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.face-button:active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.face-button.selected {
+    background-color: rgba(0, 150, 255, 0.5);
+    border-color: rgba(0, 150, 255, 0.8);
+} 

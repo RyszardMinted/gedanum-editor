@@ -71,6 +71,15 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectBlock"",
+                    ""type"": ""Button"",
+                    ""id"": ""8d96d669-8f1a-4f1b-8d3a-7d9b9e7f7f7f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +201,17 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""CameraZoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9022bf2e-c3db-4a23-bfad-74e41cc4965d"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectBlock"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -319,6 +339,7 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
         m_Editor_CameraZoom = m_Editor.FindAction("CameraZoom", throwIfNotFound: true);
         m_Editor_PlaceBlock = m_Editor.FindAction("PlaceBlock", throwIfNotFound: true);
         m_Editor_RemoveBlock = m_Editor.FindAction("RemoveBlock", throwIfNotFound: true);
+        m_Editor_SelectBlock = m_Editor.FindAction("SelectBlock", throwIfNotFound: true);
         // FlyControls
         m_FlyControls = asset.FindActionMap("FlyControls", throwIfNotFound: true);
         m_FlyControls_FlyMove = m_FlyControls.FindAction("FlyMove", throwIfNotFound: true);
@@ -396,6 +417,7 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Editor_CameraZoom;
     private readonly InputAction m_Editor_PlaceBlock;
     private readonly InputAction m_Editor_RemoveBlock;
+    private readonly InputAction m_Editor_SelectBlock;
     public struct EditorActions
     {
         private @VoxelEditorInput m_Wrapper;
@@ -405,6 +427,7 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
         public InputAction @CameraZoom => m_Wrapper.m_Editor_CameraZoom;
         public InputAction @PlaceBlock => m_Wrapper.m_Editor_PlaceBlock;
         public InputAction @RemoveBlock => m_Wrapper.m_Editor_RemoveBlock;
+        public InputAction @SelectBlock => m_Wrapper.m_Editor_SelectBlock;
         public InputActionMap Get() { return m_Wrapper.m_Editor; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -429,6 +452,9 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
             @RemoveBlock.started += instance.OnRemoveBlock;
             @RemoveBlock.performed += instance.OnRemoveBlock;
             @RemoveBlock.canceled += instance.OnRemoveBlock;
+            @SelectBlock.started += instance.OnSelectBlock;
+            @SelectBlock.performed += instance.OnSelectBlock;
+            @SelectBlock.canceled += instance.OnSelectBlock;
         }
 
         private void UnregisterCallbacks(IEditorActions instance)
@@ -448,6 +474,9 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
             @RemoveBlock.started -= instance.OnRemoveBlock;
             @RemoveBlock.performed -= instance.OnRemoveBlock;
             @RemoveBlock.canceled -= instance.OnRemoveBlock;
+            @SelectBlock.started -= instance.OnSelectBlock;
+            @SelectBlock.performed -= instance.OnSelectBlock;
+            @SelectBlock.canceled -= instance.OnSelectBlock;
         }
 
         public void RemoveCallbacks(IEditorActions instance)
@@ -534,6 +563,7 @@ public partial class @VoxelEditorInput: IInputActionCollection2, IDisposable
         void OnCameraZoom(InputAction.CallbackContext context);
         void OnPlaceBlock(InputAction.CallbackContext context);
         void OnRemoveBlock(InputAction.CallbackContext context);
+        void OnSelectBlock(InputAction.CallbackContext context);
     }
     public interface IFlyControlsActions
     {
