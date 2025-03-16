@@ -54,7 +54,7 @@
                     "name": "SelectBlock",
                     "type": "Button",
                     "id": "8d96d669-8f1a-4f1b-8d3a-7d9b9e7f7f7f",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

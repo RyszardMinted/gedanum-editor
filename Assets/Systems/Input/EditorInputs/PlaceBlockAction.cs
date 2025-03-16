@@ -93,6 +93,8 @@ public class PlaceBlockAction : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             var hitPoint = hit.point - hit.normal * 0.001f; // Slightly offset inside
+            if (hitPoint.y < 0) hitPoint.y = 0;
+
             var snappedPosition = SnapToSubGrid(hitPoint);
             
             var selectedBlock = FindBlockAtPosition(snappedPosition);
@@ -111,7 +113,8 @@ public class PlaceBlockAction : MonoBehaviour
 
         if (!Physics.Raycast(ray, out RaycastHit hit)) return;
         
-        var hitPoint = hit.point - hit.normal * 0.001f; // Slightly offset inside
+        var hitPoint = hit.point + hit.normal * 0.001f; // Slightly offset inside
+        if (hitPoint.y < 0) hitPoint.y = 0;
         var snappedPosition = SnapToSubGrid(hitPoint);
             
         var blockToRemove = FindBlockAtPosition(snappedPosition);
