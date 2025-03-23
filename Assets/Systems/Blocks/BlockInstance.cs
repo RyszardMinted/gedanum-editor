@@ -9,10 +9,18 @@ public class BlockInstance : MonoBehaviour
 
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
+    private MeshCollider meshCollider;
 
     private void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
+        meshCollider = GetComponent<MeshCollider>();
+        
+        // Add MeshCollider if it doesn't exist
+        if (meshCollider == null)
+        {
+            meshCollider = gameObject.AddComponent<MeshCollider>();
+        }
     }
     
     public void InitializeFromData(StandardBlocks blockData) {
@@ -20,6 +28,7 @@ public class BlockInstance : MonoBehaviour
 
         var mesh = BlockMeshGenerator.GenerateMesh(data);
         meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh; // Update the collider's mesh
         
         ApplyTextures(data);
     }

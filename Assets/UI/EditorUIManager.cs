@@ -17,6 +17,8 @@ public class EditorUIManager : MonoBehaviour {
     private string selectedTexture;
     private Label debugText;
 
+    [SerializeField] private PlaceBlockAction placeBlockAction;
+
     public void Initialize(ProjectManager manager, BlockManager blockMng) {
         projectManager = manager;
         blockManager = blockMng;
@@ -75,41 +77,39 @@ public class EditorUIManager : MonoBehaviour {
         }, "Cancel", HideModal);
     }
 
-    private void PopulateTextureList() {
+    private void PopulateTextureList()
+    {
         var root = uiDocument.rootVisualElement;
         var textureList = root.Q<ScrollView>("textureList");
         textureList.Clear();
 
-        Texture2D[] textures = Resources.LoadAll<Texture2D>("Textures");
-        Button lastSelectedButton = null; // Track the previously selected button
+        var textures = Resources.LoadAll<Texture2D>("Textures");
+        foreach (var texture in textures)
+        {
+            var textureElement = new Button();
+            textureElement.name = $"texture_{texture.name}";
+            textureElement.AddToClassList("texture-button");
+            
+            var image = new Image();
+            image.image = texture;
+            image.AddToClassList("texture-image");
+            
+            textureElement.Add(image);
+            textureList.Add(textureElement);
 
-        foreach (Texture2D texture in textures) {
-            // Create a button for each texture
-            Button textureButton = new Button { text = texture.name };
-            textureButton.AddToClassList("texture-button"); // Add default style
-            textureButton.style.backgroundImage = new StyleBackground(texture);
-            textureButton.style.unityBackgroundScaleMode = ScaleMode.ScaleToFit;
-
-            // Add click logic to select the texture
-            textureButton.clicked += () => {
-                // Remove the "selected" class from the previously selected button
-                if (lastSelectedButton != null) {
-                    lastSelectedButton.RemoveFromClassList("selected");
-                }
-
-                // Mark the current button as selected
-                textureButton.AddToClassList("selected");
-                lastSelectedButton = textureButton;
-
-                // Update the selected texture
+            // Add click handler for texture selection
+            textureElement.RegisterCallback<ClickEvent>(evt => {
                 selectedTexture = texture.name;
-                Debug.Log($"Selected texture: {selectedTexture}");
-            };
-
-            textureList.Add(textureButton);
+                // Update visual selection
+                foreach (var element in textureList.Children())
+                {
+                    if (element == textureElement)
+                        element.AddToClassList("selected");
+                    else
+                        element.RemoveFromClassList("selected");
+                }
+            });
         }
-
-        Debug.Log("Texture list populated.");
     }
 
     private List<string> GetExistingBlockFiles()

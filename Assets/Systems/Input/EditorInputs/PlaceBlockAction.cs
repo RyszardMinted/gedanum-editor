@@ -6,10 +6,9 @@ public class PlaceBlockAction : MonoBehaviour
 {
     [SerializeField] private GameObject blockPrefab;
     [SerializeField] private LayerMask placementLayer;
+    [SerializeField] private LayerMask selectionLayer;
     [SerializeField] private BlockEditorUIManager blockEditorUI;
 
-    [SerializeField] private GameObject cursor;
-    
     private VoxelEditorInput input;
     private ProjectManager projectManager;
     private BlockManager blockManager;
@@ -35,11 +34,11 @@ public class PlaceBlockAction : MonoBehaviour
     private void Update()
     {
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer))
         {
-            cursor.transform.position = hit.point;
             var subGrid = SnapToSubGrid(hit.point);
-            projectManager.DebugText = subGrid.ToString();
+            projectManager.DebugText = subGrid.ToString()+" hit: "+hit.collider.gameObject.name;
         }
     }
 
@@ -54,33 +53,25 @@ public class PlaceBlockAction : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer))
         {
-            cursor.transform.position = hit.point;
-            
-            var hitPoint = hit.point + hit.normal * 0.001f; // Slightly offset to avoid z-fighting
+            var hitPoint = hit.point + hit.normal * 0.001f; 
             var snappedPosition = SnapToSubGrid(hitPoint);
             
-            // Validate position is within bounds
             if (!IsWithinBounds(snappedPosition, projectManager.CurrentProject.data.size))
             {
-                Debug.LogWarning("Cannot place block outside bounds");
+                Debug.LogWarning($"Cannot place block outside bounds {snappedPosition}");
                 return;
             }
             
-            // Check if block already exists at position
             if (BlockExistsAtPosition(snappedPosition))
             {
-                Debug.LogWarning("Block already exists at position");
+                Debug.LogWarning($"Block already exists at position {snappedPosition}");
                 return;
             }
             
-            // Create new block data
             var newBlock = CreateBlockData(snappedPosition);
-            
-            // Add block using command pattern
             var command = new AddBlockCommand(newBlock);
             projectManager.ExecuteCommand(command);
             
-            // Update mesh
             projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data);
         }
     }
@@ -90,18 +81,29 @@ public class PlaceBlockAction : MonoBehaviour
         if (projectManager.CurrentProject == null) return;
 
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, selectionLayer))
         {
             var hitPoint = hit.point - hit.normal * 0.001f; // Slightly offset inside
             if (hitPoint.y < 0) hitPoint.y = 0;
 
             var snappedPosition = SnapToSubGrid(hitPoint);
             
-            var selectedBlock = FindBlockAtPosition(snappedPosition);
-            if (selectedBlock != null)
+            // Get the hit normal and determine which face was hit
+            var hitNormal = hit.normal;
+            var faceName = DetermineHitFace(hitNormal);
+            var blockData = FindBlockAtPosition(snappedPosition);
+
+            if (blockData == null)
             {
-                blockEditorUI.SelectBlock(selectedBlock);
+                Debug.LogWarning($"Cannot select block {snappedPosition}");
+                return;
             }
+
+            var blockFace = GetFaceFromName(blockData, faceName);
+            
+            blockEditorUI.SelectBlock(blockData);
+            blockEditorUI.SelectFace(blockFace);
         }
     }
     
@@ -110,14 +112,14 @@ public class PlaceBlockAction : MonoBehaviour
         if (projectManager.CurrentProject == null) return;
 
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-
-        if (!Physics.Raycast(ray, out RaycastHit hit)) return;
+        if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer)) return;
         
-        var hitPoint = hit.point + hit.normal * 0.001f; // Slightly offset inside
+        var hitPoint = hit.point + hit.normal * 0.001f; 
         if (hitPoint.y < 0) hitPoint.y = 0;
         var snappedPosition = SnapToSubGrid(hitPoint);
             
         var blockToRemove = FindBlockAtPosition(snappedPosition);
+        Debug.Log("Block to remove pos: "+blockToRemove?.position.ToString());
         if (blockToRemove != null)
         {
             var command = new RemoveBlockCommand(blockToRemove);
@@ -184,6 +186,34 @@ public class PlaceBlockAction : MonoBehaviour
             back = new BlockFace { texture = defaultTexture, uv = defaultUV },
             left = new BlockFace { texture = defaultTexture, uv = defaultUV },
             right = new BlockFace { texture = defaultTexture, uv = defaultUV }
+        };
+    }
+
+    private string DetermineHitFace(Vector3 normal)
+    {
+        normal = normal.normalized;
+        
+        var threshold = 0.001f;
+        
+        if (Vector3.Distance(normal, Vector3.up) < threshold) return "top";
+        if (Vector3.Distance(normal, Vector3.down) < threshold) return "bottom";
+        if (Vector3.Distance(normal, Vector3.forward) < threshold) return "front";
+        if (Vector3.Distance(normal, Vector3.back) < threshold) return "back";
+        if (Vector3.Distance(normal, Vector3.left) < threshold) return "left";
+        return Vector3.Distance(normal, Vector3.right) < threshold ? "right" : "unknown";
+    }
+
+    private BlockFace GetFaceFromName(BlockData block, string faceName)
+    {
+        return faceName switch
+        {
+            "top" => block.top,
+            "bottom" => block.bottom,
+            "front" => block.front,
+            "back" => block.back,
+            "left" => block.left,
+            "right" => block.right,
+            _ => null
         };
     }
 }

@@ -78,11 +78,7 @@ public class CameraMovementAction : MonoBehaviour
             
             if (distanceToTarget >= minDistance && distanceToTarget <= maxDistance) {
                 Camera.main.transform.position = newCameraPosition;
-            } else {
-                Debug.LogWarning("Zoom limit reached.");
-            }
-        } else {
-            Debug.LogWarning("No valid object hit to zoom into.");
-        }
+            } 
+        } 
     }
 }

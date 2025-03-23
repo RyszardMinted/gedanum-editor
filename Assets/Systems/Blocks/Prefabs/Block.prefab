@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 9069393576009933245}
   - component: {fileID: 9022180228030366313}
   - component: {fileID: 4440597794280876010}
-  - component: {fileID: 8275258664353404176}
   - component: {fileID: -6131536923118192141}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,27 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8275258664353404176
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1844181926044247636}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-6131536923118192141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,23 +100,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
-    position: {x: 0, y: 0, z: 0}
-    type: 
-    top:
-      texture: 
-      uv: {x: 0, y: 0, z: 0, w: 0}
-    bottom:
-      texture: 
-      uv: {x: 0, y: 0, z: 0, w: 0}
-    front:
-      texture: 
-      uv: {x: 0, y: 0, z: 0, w: 0}
-    back:
-      texture: 
-      uv: {x: 0, y: 0, z: 0, w: 0}
-    left:
-      texture: 
-      uv: {x: 0, y: 0, z: 0, w: 0}
-    right:
-      texture: 
-      uv: {x: 0, y: 0, z: 0, w: 0}
+    blockName: 
+    size: {x: 0, y: 0, z: 0}
+    blocks: []

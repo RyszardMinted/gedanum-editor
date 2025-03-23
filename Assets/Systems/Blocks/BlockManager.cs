@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BlockManager : MonoBehaviour {
     [SerializeField] private GameObject blockPrefab;
+    [SerializeField] private int blockLayer = 0; // Global layer for all blocks
 
     public StandardBlocks LoadInnerBlock(string path)
     {
@@ -55,7 +56,7 @@ public class BlockManager : MonoBehaviour {
         Destroy(go);
     }
 
-    public  BlockInstance InstantiateEmptyBlock()
+    public BlockInstance InstantiateEmptyBlock()
     {
         var blockObject = Instantiate(blockPrefab, Vector3.zero, Quaternion.identity);
         var blockInstance = blockObject.GetComponent<BlockInstance>();
@@ -63,6 +64,10 @@ public class BlockManager : MonoBehaviour {
             Debug.LogError("The blockPrefab must have a BlockInstance component.");
             return null;
         }
+        
+        // Set the layer for the block
+        blockObject.layer = blockLayer;
+        
         return blockInstance;
     }
 
@@ -75,6 +80,9 @@ public class BlockManager : MonoBehaviour {
             Debug.LogError("The blockPrefab must have a BlockInstance component.");
             return null;
         }
+
+        // Set the layer for the block
+        blockObject.layer = blockLayer;
 
         // Initialize the BlockInstance with the entire StandardBlocks structure
         blockInstance.InitializeFromData(standardBlocks);
