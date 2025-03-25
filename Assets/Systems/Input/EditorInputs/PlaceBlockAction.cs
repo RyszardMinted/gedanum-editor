@@ -72,7 +72,7 @@ public class PlaceBlockAction : MonoBehaviour
             var command = new AddBlockCommand(newBlock);
             projectManager.ExecuteCommand(command);
             
-            projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data);
+            projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data, blockManager);
         }
     }
     
@@ -126,7 +126,7 @@ public class PlaceBlockAction : MonoBehaviour
             projectManager.ExecuteCommand(command);
                 
             // Update mesh
-            projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data);
+            projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data, blockManager);
         }
         else
         {

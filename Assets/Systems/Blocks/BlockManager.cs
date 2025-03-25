@@ -1,12 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BlockManager : MonoBehaviour {
     [SerializeField] private GameObject blockPrefab;
-    [SerializeField] private int blockLayer = 0; // Global layer for all blocks
+    [SerializeField] private int blockLayer = 0; 
+
+    [HideInInspector] [DoNotSerialize] public Texture2DArray textureArray;
+    [HideInInspector] [DoNotSerialize] public List<string> textureNames;
+
+    private void Awake()
+    {
+        LoadTextures();
+    }
 
     public StandardBlocks LoadInnerBlock(string path)
     {
@@ -45,7 +55,6 @@ public class BlockManager : MonoBehaviour {
         };
         
         var path = Path.Combine(Application.persistentDataPath, $"{block.data.blockName}.json");
-        
         var json = JsonConvert.SerializeObject(block.data, settings);
         
         File.WriteAllText(path, json);
@@ -65,14 +74,12 @@ public class BlockManager : MonoBehaviour {
             return null;
         }
         
-        // Set the layer for the block
         blockObject.layer = blockLayer;
         
         return blockInstance;
     }
 
     private BlockInstance CreateBlockStructure(StandardBlocks standardBlocks) {
-        // Instantiate a single GameObject to hold the entire block structure
         var blockObject = Instantiate(blockPrefab, Vector3.zero, Quaternion.identity);
         var blockInstance = blockObject.GetComponent<BlockInstance>();
 
@@ -81,13 +88,40 @@ public class BlockManager : MonoBehaviour {
             return null;
         }
 
-        // Set the layer for the block
         blockObject.layer = blockLayer;
 
-        // Initialize the BlockInstance with the entire StandardBlocks structure
-        blockInstance.InitializeFromData(standardBlocks);
+        blockInstance.InitializeFromData(standardBlocks, this);
 
         return blockInstance;
+    }
+
+    public uint IndexOfTexture(string textureName)
+    {
+        for (var i = 0; i < textureNames.Count; i++)
+        {
+            if (textureNames[i] == textureName) return (uint) i;
+        }
+
+        return 0;
+    }
+    
+    private void LoadTextures() {
+        var texturePaths = new HashSet<string>();
+        textureNames = new List<string>();
+
+        var textures = Resources.LoadAll<Texture2D>("Textures");
+        foreach (var texture in textures)
+        {
+            texturePaths.Add($"Textures/{texture.name}");
+            textureNames.Add(texture.name);
+            Debug.Log($"Loading texture {texture.name}");
+        }
+        
+        textureArray = TextureLoader.CreateTextureArray(texturePaths.ToArray());
+        if (textureArray == null) {
+            Debug.LogError("Failed to create Texture2DArray.");
+            return;
+        }
     }
 
     private void Start() {

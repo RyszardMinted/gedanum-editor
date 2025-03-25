@@ -60,6 +60,6 @@ public class BlockEditorUIManager : MonoBehaviour
         projectManager.ExecuteCommand(command);
         
         // Update the mesh
-        projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data);
+        projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data, blockManager);
     }
 } 

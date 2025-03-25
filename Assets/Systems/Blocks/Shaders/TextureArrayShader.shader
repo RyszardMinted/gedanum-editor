@@ -14,12 +14,12 @@ Shader "Custom/TextureArrayShader" {
             struct appdata {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
-                float faceIndex : TEXCOORD1; // Face index (0-5 for 6 faces)
+                float2 faceIndex : TEXCOORD1; 
             };
 
             struct v2f {
                 float2 uv : TEXCOORD0;
-                float faceIndex : TEXCOORD1;
+                float2 faceIndex : TEXCOORD1;
                 float4 pos : SV_POSITION;
             };
 
@@ -32,7 +32,7 @@ Shader "Custom/TextureArrayShader" {
             }
 
             fixed4 frag (v2f i) : SV_Target {
-                return UNITY_SAMPLE_TEX2DARRAY(_MainTexArray, float3(i.uv, i.faceIndex));
+                return UNITY_SAMPLE_TEX2DARRAY(_MainTexArray, float3(i.uv, i.faceIndex.x));
             }
             ENDCG
         }

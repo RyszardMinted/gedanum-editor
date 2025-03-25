@@ -16,45 +16,25 @@ public class BlockInstance : MonoBehaviour
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
         
-        // Add MeshCollider if it doesn't exist
         if (meshCollider == null)
         {
             meshCollider = gameObject.AddComponent<MeshCollider>();
         }
     }
     
-    public void InitializeFromData(StandardBlocks blockData) {
+    public void InitializeFromData(StandardBlocks blockData, BlockManager manager) {
         data = blockData;
 
-        var mesh = BlockMeshGenerator.GenerateMesh(data);
+        var mesh = BlockMeshGenerator.GenerateMesh(data, manager);
         meshFilter.mesh = mesh;
-        meshCollider.sharedMesh = mesh; // Update the collider's mesh
+        meshCollider.sharedMesh = mesh; 
         
-        ApplyTextures(data);
+        ApplyTextures(manager);
     }
     
-    private void ApplyTextures(StandardBlocks blockData) {
-        var texturePaths = new HashSet<string>();
-
-        foreach (var block in blockData.blocks) {
-            texturePaths.Add($"Textures/{block.top.texture}");
-            texturePaths.Add($"Textures/{block.bottom.texture}");
-            texturePaths.Add($"Textures/{block.front.texture}");
-            texturePaths.Add($"Textures/{block.back.texture}");
-            texturePaths.Add($"Textures/{block.left.texture}");
-            texturePaths.Add($"Textures/{block.right.texture}");
-        }
-
-        if (texturePaths.Count <= 0) return; // empty block
-        
-        var textureArray = TextureLoader.CreateTextureArray(texturePaths.ToArray());
-        if (textureArray == null) {
-            Debug.LogError("Failed to create Texture2DArray.");
-            return;
-        }
-
+    private void ApplyTextures(BlockManager manager) {
         Material material = meshRenderer.material;
-        material.SetTexture("_MainTexArray", textureArray);
+        material.SetTexture("_MainTexArray", manager.textureArray);
     }
     
 }

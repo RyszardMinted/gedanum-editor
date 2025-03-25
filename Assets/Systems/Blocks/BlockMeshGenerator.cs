@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class BlockMeshGenerator
 {
-    public static Mesh GenerateMesh(StandardBlocks standardBlocks)
+    public static Mesh GenerateMesh(StandardBlocks standardBlocks, BlockManager manager)
     {
         var vertices = new List<Vector3>();
         var triangles = new List<int>();
@@ -20,7 +20,7 @@ public static class BlockMeshGenerator
 
         foreach (BlockData block in standardBlocks.blocks)
         {
-            AddBlock(vertices, triangles, uvs, uv2, block, vertexOffset, standardBlocks, scale);
+            AddBlock(vertices, triangles, uvs, uv2, block, vertexOffset, standardBlocks, scale, manager);
             vertexOffset += 24; // Each block has 24 vertices (6 faces, 4 vertices per face)
         }
 
@@ -37,7 +37,7 @@ public static class BlockMeshGenerator
     }
 
     private static void AddBlock(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, List<Vector2> uv2,
-        BlockData block, int vertexOffset, StandardBlocks data, Vector3 scale)
+        BlockData block, int vertexOffset, StandardBlocks data, Vector3 scale, BlockManager manager)
     {
         var scaledPosition = Vector3.Scale(block.position, scale);
 
@@ -75,6 +75,13 @@ public static class BlockMeshGenerator
             { "front", block.front.uv }, { "back", block.back.uv },
             { "left", block.left.uv }, { "right", block.right.uv }
         };
+        
+        var indexMappings = new Dictionary<string, uint>
+        {
+            { "top", manager.IndexOfTexture(block.top.texture) }, { "bottom", manager.IndexOfTexture(block.bottom.texture) },
+            { "front", manager.IndexOfTexture(block.front.texture) }, { "back", manager.IndexOfTexture(block.back.texture) },
+            { "left", manager.IndexOfTexture(block.left.texture) }, { "right", manager.IndexOfTexture(block.right.texture) }
+        };
 
         // Define face triangle indices
         int[] faceTriangles = { 0, 1, 2, 2, 3, 0 };
@@ -94,9 +101,11 @@ public static class BlockMeshGenerator
         for (int i = 0; i < faces.Length; i++)
         {
             // Check if there's an adjacent block
+            var face = faces[i];
+            
             //if (!IsBlockAtPosition(block.position + faceOffsets[i], data))
             //{
-                AddFace(vertices, triangles, uvs, uv2, faceVertices, faceTriangles, uvMappings[faces[i]], vertexOffset, i * 4, i);
+                AddFace(vertices, triangles, uvs, uv2, faceVertices, faceTriangles, uvMappings[faces[i]], vertexOffset, i * 4, indexMappings[faces[i]]);
             //}
         }
     }
@@ -115,7 +124,7 @@ public static class BlockMeshGenerator
     }
 
     private static void AddFace(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, List<Vector2> uv2,
-        Vector3[] faceVertices, int[] faceTriangles, Vector4 uvMapping, int vertexOffset, int startVertexIndex, int textureIndex)
+        Vector3[] faceVertices, int[] faceTriangles, Vector4 uvMapping, int vertexOffset, int startVertexIndex, uint textureIndex)
     {
         vertices.Add(faceVertices[startVertexIndex + 3]);
         vertices.Add(faceVertices[startVertexIndex + 2]);
