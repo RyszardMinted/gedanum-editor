@@ -1,36 +1,36 @@
 Step,Duration (s)
-Build player,5.53
-Preprocess Player,0.05
+Build player,272.92
+Preprocess Player,0.07
 Prepare For Build,0.00
-ProducePlayerScriptAssemblies,1.16
-Prebuild Cleanup and Recompile,0.88
-Compile scripts,0.35
-Generate and validate platform script types,0.02
-Verify Build setup,0.11
-Check old data build,0.10
-Prepare assets for target platform,0.02
+ProducePlayerScriptAssemblies,8.84
+Prebuild Cleanup and Recompile,7.48
+Compile scripts,6.92
+Generate and validate platform script types,0.03
+Verify Build setup,0.04
+Check old data build,0.03
+Prepare assets for target platform,7.76
 Prepare splash screen,0.00
-Building scenes,0.30
-Building scene Assets/Scenes/Main.unity,0.30
-Build scripts DLLs,0.01
+Building scenes,0.33
+Building scene Assets/Scenes/Main.unity,0.33
+Build scripts DLLs,0.02
 GetSystemAssemblies,0.00
-Build GlobalGameManagers file,0.07
-Writing asset files,0.52
-Packaging assets - globalgamemanagers.assets,0.36
-Packaging assets - resources.assets,0.08
-Packaging assets - sharedassets0.assets = additional assets for scene 0: Assets/Scenes/Main.unity,0.07
+Build GlobalGameManagers file,0.08
+Writing asset files,0.59
+Packaging assets - globalgamemanagers.assets,0.32
+Packaging assets - resources.assets,0.12
+Packaging assets - sharedassets0.assets = additional assets for scene 0: Assets/Scenes/Main.unity,0.14
 Building Resources/unity_builtin_extra,0.05
-Creating compressed player package,0.90
-Write data build dirty tracking information,0.10
-Postprocess built player,1.91
-Setup incremental player build,0.08
-Incremental player build,1.19
+Creating compressed player package,0.92
+Write data build dirty tracking information,0.19
+Postprocess built player,253.52
+Setup incremental player build,0.16
+Incremental player build,252.52
 Report output files,0.01
 
 Asset,Size (KB)
-/Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.framework.js,323.17
-/Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.wasm,38436.20
-/Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.data,12406.22
+/Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.framework.js,342.78
+/Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.wasm,46735.21
+/Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.data,15231.23
 /Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/Build/WebGL.loader.js,26.16
 /Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/index.html,4.08
 /Users/ryszardsalmanowicz/Desktop/Gedanum/gedanum-editor/Builds/WebGL/manifest.webmanifest,0.38

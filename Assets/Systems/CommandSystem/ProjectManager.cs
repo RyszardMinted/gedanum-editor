@@ -18,6 +18,12 @@ public class ProjectManager
     {
         this.blockManager = blockManager;
     }
+
+    public Vector3Int GetGridSize()
+    {
+        if (CurrentProject != null) return CurrentProject.data.size;
+        return Vector3Int.one;
+    }
     
     public void ClearProject(bool createEmpty)
     {

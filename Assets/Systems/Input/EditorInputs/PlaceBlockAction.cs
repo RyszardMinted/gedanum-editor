@@ -8,6 +8,7 @@ public class PlaceBlockAction : MonoBehaviour
     [SerializeField] private LayerMask placementLayer;
     [SerializeField] private LayerMask selectionLayer;
     [SerializeField] private BlockEditorUIManager blockEditorUI;
+    [SerializeField] private BlockFaceHighlighter highlighter;
 
     private VoxelEditorInput input;
     private ProjectManager projectManager;
@@ -37,8 +38,20 @@ public class PlaceBlockAction : MonoBehaviour
         
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer))
         {
-            var subGrid = SnapToSubGrid(hit.point);
-            projectManager.DebugText = subGrid.ToString()+" hit: "+hit.collider.gameObject.name;
+            var hitPoint = hit.point + hit.normal * 0.001f; 
+            var subGrid = SnapToSubGrid(hitPoint, projectManager.GetGridSize());
+
+            var block = highlighter.GetSelectedBlock();
+            if (block == null)
+            {
+                projectManager.DebugText = subGrid.ToString();
+            }
+            else
+            {
+                subGrid = Vector3Int.FloorToInt(BlockFaceHighlighter.SelectedBlockCoords);
+                projectManager.DebugText = $"{subGrid},  Face: {BlockFaceHighlighter.SelectedBlockFace}";
+            }
+
         }
     }
 
@@ -54,7 +67,7 @@ public class PlaceBlockAction : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer))
         {
             var hitPoint = hit.point + hit.normal * 0.001f; 
-            var snappedPosition = SnapToSubGrid(hitPoint);
+            var snappedPosition = SnapToSubGrid(hitPoint, projectManager.GetGridSize());
             
             if (!IsWithinBounds(snappedPosition, projectManager.CurrentProject.data.size))
             {
@@ -75,6 +88,20 @@ public class PlaceBlockAction : MonoBehaviour
             projectManager.CurrentProject.InitializeFromData(projectManager.CurrentProject.data, blockManager);
         }
     }
+
+    public BlockData GetBlockDataFromRay(RaycastHit hit)
+    {
+        var hitPoint = hit.point - hit.normal * 0.001f; // Slightly offset inside
+        if (hitPoint.y < 0) hitPoint.y = 0;
+
+        var snappedPosition = SnapToSubGrid(hitPoint, projectManager.GetGridSize());
+        
+        var hitNormal = hit.normal;
+        var faceName = DetermineHitFace(hitNormal);
+        var blockData = FindBlockAtPosition(snappedPosition);
+
+        return blockData;
+    }
     
     public void SelectBlock()
     {
@@ -87,7 +114,7 @@ public class PlaceBlockAction : MonoBehaviour
             var hitPoint = hit.point - hit.normal * 0.001f; // Slightly offset inside
             if (hitPoint.y < 0) hitPoint.y = 0;
 
-            var snappedPosition = SnapToSubGrid(hitPoint);
+            var snappedPosition = SnapToSubGrid(hitPoint, projectManager.GetGridSize());
             
             // Get the hit normal and determine which face was hit
             var hitNormal = hit.normal;
@@ -116,7 +143,7 @@ public class PlaceBlockAction : MonoBehaviour
         
         var hitPoint = hit.point + hit.normal * 0.001f; 
         if (hitPoint.y < 0) hitPoint.y = 0;
-        var snappedPosition = SnapToSubGrid(hitPoint);
+        var snappedPosition = SnapToSubGrid(hitPoint, projectManager.GetGridSize());
             
         var blockToRemove = FindBlockAtPosition(snappedPosition);
         Debug.Log("Block to remove pos: "+blockToRemove?.position.ToString());
@@ -134,11 +161,9 @@ public class PlaceBlockAction : MonoBehaviour
         }
     }
 
-    private Vector3Int SnapToSubGrid(Vector3 position)
+    public static Vector3Int SnapToSubGrid(Vector3 position, Vector3Int size)
     {
-        if (projectManager.CurrentProject == null) return Vector3Int.zero;
-
-        var gridSize = new Vector3( 1.0f / projectManager.CurrentProject.data.size.x, 1.0f / projectManager.CurrentProject.data.size.y, 1.0f / projectManager.CurrentProject.data.size.z);
+        var gridSize = new Vector3( 1.0f / size.x, 1.0f / size.y, 1.0f / size.z);
         
         // position += Vector3.one * 0.5f;
         
@@ -189,7 +214,7 @@ public class PlaceBlockAction : MonoBehaviour
         };
     }
 
-    private string DetermineHitFace(Vector3 normal)
+    public static string DetermineHitFace(Vector3 normal)
     {
         normal = normal.normalized;
         
@@ -203,7 +228,7 @@ public class PlaceBlockAction : MonoBehaviour
         return Vector3.Distance(normal, Vector3.right) < threshold ? "right" : "unknown";
     }
 
-    private BlockFace GetFaceFromName(BlockData block, string faceName)
+    public static BlockFace GetFaceFromName(BlockData block, string faceName)
     {
         return faceName switch
         {

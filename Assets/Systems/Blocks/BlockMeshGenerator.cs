@@ -9,6 +9,8 @@ public static class BlockMeshGenerator
         var triangles = new List<int>();
         var uvs = new List<Vector2>();
         var uv2 = new List<Vector2>(); // To store the texture index
+        var colors = new List<Color>(); // To store face IDs
+        var worldPositions = new List<Vector3>(); // To store world positions
 
         var vertexOffset = 0;
         
@@ -20,7 +22,7 @@ public static class BlockMeshGenerator
 
         foreach (BlockData block in standardBlocks.blocks)
         {
-            AddBlock(vertices, triangles, uvs, uv2, block, vertexOffset, standardBlocks, scale, manager);
+            AddBlock(vertices, triangles, uvs, uv2, colors, worldPositions, block, vertexOffset, standardBlocks, scale, manager);
             vertexOffset += 24; // Each block has 24 vertices (6 faces, 4 vertices per face)
         }
 
@@ -29,14 +31,17 @@ public static class BlockMeshGenerator
             vertices = vertices.ToArray(),
             triangles = triangles.ToArray(),
             uv = uvs.ToArray(),
-            uv2 = uv2.ToArray()
+            uv2 = uv2.ToArray(),
+            colors = colors.ToArray()
         };
+
+        mesh.SetUVs(2, worldPositions);
 
         mesh.RecalculateNormals();
         return mesh;
     }
 
-    private static void AddBlock(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, List<Vector2> uv2,
+    private static void AddBlock(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, List<Vector2> uv2, List<Color> colors, List<Vector3> worldPositions,
         BlockData block, int vertexOffset, StandardBlocks data, Vector3 scale, BlockManager manager)
     {
         var scaledPosition = Vector3.Scale(block.position, scale);
@@ -100,13 +105,8 @@ public static class BlockMeshGenerator
 
         for (int i = 0; i < faces.Length; i++)
         {
-            // Check if there's an adjacent block
             var face = faces[i];
-            
-            //if (!IsBlockAtPosition(block.position + faceOffsets[i], data))
-            //{
-                AddFace(vertices, triangles, uvs, uv2, faceVertices, faceTriangles, uvMappings[faces[i]], vertexOffset, i * 4, indexMappings[faces[i]]);
-            //}
+            AddFace(vertices, triangles, uvs, uv2, colors, worldPositions, faceVertices, faceTriangles, uvMappings[faces[i]], vertexOffset, i * 4, indexMappings[faces[i]], i, block.position);
         }
     }
 
@@ -123,8 +123,8 @@ public static class BlockMeshGenerator
         return false;
     }
 
-    private static void AddFace(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, List<Vector2> uv2,
-        Vector3[] faceVertices, int[] faceTriangles, Vector4 uvMapping, int vertexOffset, int startVertexIndex, uint textureIndex)
+    private static void AddFace(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, List<Vector2> uv2, List<Color> colors, List<Vector3> worldPositions,
+        Vector3[] faceVertices, int[] faceTriangles, Vector4 uvMapping, int vertexOffset, int startVertexIndex, uint textureIndex, int faceId, Vector3Int blockPos)
     {
         vertices.Add(faceVertices[startVertexIndex + 3]);
         vertices.Add(faceVertices[startVertexIndex + 2]);
@@ -145,5 +145,18 @@ public static class BlockMeshGenerator
         uv2.Add(new Vector2(textureIndex, 0)); // Bottom-right
         uv2.Add(new Vector2(textureIndex, 0)); // Top-right
         uv2.Add(new Vector2(textureIndex, 0)); // Top-left
+
+        // Add face ID to vertex colors (using red channel)
+        Color faceColor = new Color(faceId / 255f, 0, 0, 1);
+        colors.Add(faceColor);
+        colors.Add(faceColor);
+        colors.Add(faceColor);
+        colors.Add(faceColor);
+
+        // Add world position for each vertex
+        for (int i = 0; i < 4; i++)
+        {
+            worldPositions.Add(blockPos);
+        }
     }
 }

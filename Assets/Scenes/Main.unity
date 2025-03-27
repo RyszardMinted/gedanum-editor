@@ -868,6 +868,7 @@ GameObject:
   - component: {fileID: 1327927908}
   - component: {fileID: 1327927907}
   - component: {fileID: 1327927910}
+  - component: {fileID: 1327927911}
   m_Layer: 0
   m_Name: EditorUI
   m_TagString: Untagged
@@ -937,6 +938,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 1327927908}
+  placeBlockAction: {fileID: 1514448192}
+--- !u!114 &1327927911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1327927906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d35a735353a54d3cb215cad10ce3dea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placementLayer:
+    serializedVersion: 2
+    m_Bits: 128
   placeBlockAction: {fileID: 1514448192}
 --- !u!1 &1475992137
 GameObject:
@@ -1041,7 +1058,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   blockEditorUI: {fileID: 1327927910}
-  cursor: {fileID: 0}
+  highlighter: {fileID: 1327927911}
 --- !u!114 &1514448193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1142,6 +1159,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockPrefab: {fileID: 1844181926044247636, guid: dcdc76eebefac4a06891331152d231aa, type: 3}
   blockLayer: 7
+  textureArray: {fileID: 0}
+  textureNames: []
 --- !u!4 &1633692230
 Transform:
   m_ObjectHideFlags: 0

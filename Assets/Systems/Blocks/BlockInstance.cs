@@ -5,6 +5,8 @@ using UnityEngine;
     
 public class BlockInstance : MonoBehaviour
 {
+    private static readonly int MainTexArray = Shader.PropertyToID("_MainTexArray");
+    private static readonly int HighlightColor = Shader.PropertyToID("_HighlightColor");
     public StandardBlocks data; 
 
     private MeshRenderer meshRenderer;
@@ -20,6 +22,15 @@ public class BlockInstance : MonoBehaviour
         {
             meshCollider = gameObject.AddComponent<MeshCollider>();
         }
+
+        var originalMaterial = meshRenderer.material;
+        var newMaterial = new Material(Shader.Find("Custom/BlockFaceHighlight"));
+        newMaterial.SetTexture(MainTexArray, originalMaterial.GetTexture(MainTexArray));
+        newMaterial.SetColor(HighlightColor, new Color(1, 1, 1, 0.5f));
+        meshRenderer.material = newMaterial;
+
+        // Add the face highlighter component
+        gameObject.AddComponent<BlockFaceHighlighter>();
     }
     
     public void InitializeFromData(StandardBlocks blockData, BlockManager manager) {
