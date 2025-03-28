@@ -138,15 +138,10 @@ public class PlaceBlockAction : MonoBehaviour
     {
         if (projectManager.CurrentProject == null) return;
 
-        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, placementLayer)) return;
-        
-        var hitPoint = hit.point + hit.normal * 0.001f; 
-        if (hitPoint.y < 0) hitPoint.y = 0;
-        var snappedPosition = SnapToSubGrid(hitPoint, projectManager.GetGridSize());
-            
-        var blockToRemove = FindBlockAtPosition(snappedPosition);
-        Debug.Log("Block to remove pos: "+blockToRemove?.position.ToString());
+
+        var coords = BlockFaceHighlighter.SelectedBlockCoords;
+
+        var blockToRemove = FindBlockAtPosition(Vector3Int.FloorToInt(coords));
         if (blockToRemove != null)
         {
             var command = new RemoveBlockCommand(blockToRemove);

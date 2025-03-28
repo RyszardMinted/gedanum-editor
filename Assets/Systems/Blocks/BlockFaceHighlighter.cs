@@ -89,7 +89,6 @@ public class BlockFaceHighlighter : MonoBehaviour
             var selectedBlockNow = placeBlockAction.GetBlockDataFromRay(hit);
             if (selectedBlockNow != selectedBlock)
             {
-                Debug.Log($"Change block selection");
                 ClearSelection();
             }
 
